@@ -45,11 +45,11 @@ struct HomeView: View {
         ZStack {
             RoundedRectangle(cornerRadius: 24)
                 .fill(cardBackground)
-                .shadow(color: .black.opacity(0.10), radius: 1, x: 0, y: 1)
+                .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 1)
                 .shadow(color: .black.opacity(0.05), radius: 0, x: 0, y: -1)
 
             RoundedRectangle(cornerRadius: 24)
-                .strokeBorder(style: StrokeStyle(lineWidth: 1, dash: [8, 5]))
+                .strokeBorder(style: StrokeStyle(lineWidth: 3, dash: [20, 5]))
                 .foregroundStyle(borderColor)
 
             VStack(alignment: .leading, spacing: 8) {
@@ -112,7 +112,7 @@ struct HomeView: View {
         .buttonStyle(PlayfulPillButtonStyle(
             background: .lemon500,
             foreground: .ink,
-            shadowOffset: 5
+            shadowOffset: 8
         ))
     }
 }

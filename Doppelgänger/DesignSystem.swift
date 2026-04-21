@@ -8,9 +8,9 @@ extension Color {
     static let warmSilver = Color(hex: "9f9b93")
     static let warmCharcoal = Color(hex: "55534e")
 
-    static let oatBorder = Color(hex: "dad4c8")
+    static let oatBorder = Color(hex: "696762")
     static let oatLight = Color(hex: "eee9df")
-    static let darkBorder = Color(hex: "525a69")
+    static let darkBorder = Color(hex: "aabbda")
 
     static let matcha300 = Color(hex: "84e7a5")
     static let matcha600 = Color(hex: "078a52")
@@ -27,6 +27,7 @@ extension Color {
     static let ube300 = Color(hex: "c1b0ff")
     static let ube800 = Color(hex: "43089f")
     static let ube900 = Color(hex: "32037d")
+    static let ubeDeep = Color(hex: "160040")
 
     static let pomegranate400 = Color(hex: "fc7981")
 
@@ -69,16 +70,20 @@ struct PlayfulPillButtonStyle: ButtonStyle {
     var foreground: Color
     var shadowOffset: CGFloat = 5
 
+    @Environment(\.colorScheme) private var colorScheme
+
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label
+        let shadowColor: Color = colorScheme == .dark ? .ubeDeep : .black
+
+        return configuration.label
             .frame(maxWidth: .infinity)
             .padding(.vertical, 18)
             .foregroundStyle(foreground)
             .background(
-                Capsule()
+                RoundedRectangle(cornerRadius: 10)
                     .fill(background)
                     .shadow(
-                        color: .black,
+                        color: shadowColor,
                         radius: 0,
                         x: configuration.isPressed ? -2 : -shadowOffset,
                         y: configuration.isPressed ? 2 : shadowOffset
