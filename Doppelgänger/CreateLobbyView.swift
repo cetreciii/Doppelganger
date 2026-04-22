@@ -161,14 +161,19 @@ struct CreateLobbyView: View {
                 Group {
                     if manager.allPlayerNames.isEmpty {
                         waitingIndicator
+                            .transition(.opacity.combined(with: .scale(scale: 0.95, anchor: .topLeading)))
                     } else {
-                        FlowLayout(spacing: 8) {
+                        VStack(alignment: .leading, spacing: 8) {
                             ForEach(manager.allPlayerNames, id: \.self) { name in
                                 playerChip(name, isYou: name == manager.myPeerID.displayName)
+                                    .transition(.scale(scale: 0.8).combined(with: .opacity))
                             }
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .transition(.opacity.combined(with: .scale(scale: 0.95, anchor: .topLeading)))
                     }
                 }
+                .animation(.spring(response: 0.4, dampingFraction: 0.75), value: manager.allPlayerNames)
                 .padding(20)
             }
         }
