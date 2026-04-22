@@ -16,6 +16,7 @@ private enum LobbyMessage: Codable {
     case settingsUpdated(GameSettings)
     case playerListUpdated([String])
     case startGame
+    case wordsReady([String])
 }
 
 struct DiscoveredLobby: Identifiable {
@@ -40,6 +41,7 @@ class MultipeerManager: NSObject, ObservableObject {
     @Published var allPlayerNames: [String] = []
     @Published var isHost: Bool = false
     @Published var gameStarted: Bool = false
+    @Published var gameWords: [String] = []
 
     override init() {
         myPeerID = MCPeerID(displayName: UIDevice.current.name)
@@ -67,6 +69,12 @@ class MultipeerManager: NSObject, ObservableObject {
     func startGame() {
         send(.startGame, to: connectedPeers)
         gameStarted = true
+    }
+
+    func broadcastWords(_ words: [String]) {
+        gameWords = words
+        guard !connectedPeers.isEmpty else { return }
+        send(.wordsReady(words), to: connectedPeers)
     }
 
     // MARK: Joiner
@@ -98,6 +106,7 @@ class MultipeerManager: NSObject, ObservableObject {
         allPlayerNames = []
         isHost = false
         gameStarted = false
+        gameWords = []
     }
 
     // MARK: Private
@@ -148,6 +157,7 @@ extension MultipeerManager: MCSessionDelegate {
             case .settingsUpdated(let s): self.settings = s
             case .playerListUpdated(let names): self.allPlayerNames = names
             case .startGame: self.gameStarted = true
+            case .wordsReady(let w): self.gameWords = w
             }
         }
     }

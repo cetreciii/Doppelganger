@@ -12,7 +12,6 @@ struct HomeView: View {
     private var textColor: Color { isLight ? .ink : .white }
     private var cardBackground: Color { isLight ? .white : .ube800 }
     private var borderColor: Color { isLight ? .oatBorder : .darkBorder }
-    private var secondaryText: Color { isLight ? .warmSilver : .ube300 }
 
     var body: some View {
         ZStack {
@@ -30,9 +29,6 @@ struct HomeView: View {
                     .padding(.horizontal, 40)
 
                 Spacer().frame(height: 40)
-
-//                roleChips
-//                    .padding(.bottom, 50)
 
                 Spacer()
 
@@ -79,29 +75,6 @@ struct HomeView: View {
             .foregroundStyle(textColor)
             .multilineTextAlignment(.center)
             .lineSpacing(5)
-    }
-
-    // MARK: - Role Chips
-
-    private var roleChips: some View {
-        HStack(spacing: 10) {
-            chip(label: "Normal", bg: .matcha300, fg: .matcha800, angle: 2.5)
-            chip(label: "Pretender", bg: .pomegranate400, fg: .white, angle: -1.5)
-            chip(label: "AI", bg: .ube800, fg: .white, angle: 1.0)
-        }
-        .padding(.horizontal, 24)
-    }
-
-    private func chip(label: String, bg: Color, fg: Color, angle: Double) -> some View {
-        Text(label)
-            .font(.roobert(13, weight: .semibold))
-            .tracking(0.4)
-            .foregroundStyle(fg)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 8)
-            .background(Capsule().fill(bg))
-            .shadow(color: .black.opacity(0.15), radius: 0, x: -2, y: 2)
-            .rotationEffect(.degrees(angle))
     }
 
     // MARK: - Game Buttons

@@ -1,7 +1,7 @@
 import SwiftUI
 
 enum AppScreen {
-    case home, createLobby, joinLobby
+    case home, createLobby, joinLobby, game
 }
 
 struct ContentView: View {
@@ -26,11 +26,16 @@ struct ContentView: View {
                     manager.reset()
                     screen = .home
                 }
+            case .game:
+                GameView(manager: manager) {
+                    manager.reset()
+                    screen = .home
+                }
             }
         }
         .onChange(of: manager.gameStarted) { _, started in
             if started {
-                // TODO: navigate to role assignment screen
+                screen = .game
             }
         }
     }
