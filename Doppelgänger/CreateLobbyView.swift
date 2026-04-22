@@ -263,11 +263,11 @@ struct CreateLobbyView: View {
                     } label: {
                         Text(optLabel)
                             .font(.roobert(13, weight: value.wrappedValue == option ? .semibold : .regular))
-                            .foregroundStyle(value.wrappedValue == option ? .white : secondaryText)
+                            .foregroundStyle(value.wrappedValue == option ? (isLight ? .white : .ink) : secondaryText)
                             .padding(.horizontal, 14)
                             .padding(.vertical, 8)
                             .background(
-                                Capsule().fill(value.wrappedValue == option ? Color.ube800 : (isLight ? Color.oatLight : Color(hex: "32037d")))
+                                Capsule().fill(value.wrappedValue == option ? (isLight ? Color.ube800 : .white) : (isLight ? Color.oatLight : Color(hex: "32037d")))
                             )
                     }
                 }

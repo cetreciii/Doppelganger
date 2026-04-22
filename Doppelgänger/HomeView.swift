@@ -1,8 +1,11 @@
 import SwiftUI
 
 struct HomeView: View {
-    var onCreateLobby: () -> Void = {}
-    var onJoinLobby: () -> Void = {}
+    var onCreateLobby: (String) -> Void = { _ in }
+    var onJoinLobby: (String) -> Void = { _ in }
+
+    @State private var playerName: String = ""
+    @State private var isEditingName: Bool = false
 
     @Environment(\.colorScheme) private var colorScheme
 
@@ -44,22 +47,55 @@ struct HomeView: View {
     private var titleCard: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 24)
-                .fill(cardBackground)
+                .fill(Color.ube800)
                 .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 1)
                 .shadow(color: .black.opacity(0.05), radius: 0, x: 0, y: -1)
 
             RoundedRectangle(cornerRadius: 24)
-                .strokeBorder(style: StrokeStyle(lineWidth: 3, dash: [20, 5]))
-                .foregroundStyle(borderColor)
+                .strokeBorder(style: StrokeStyle(lineWidth: 3))
+                .foregroundStyle(.black)
 
-            VStack(alignment: .leading, spacing: 8) {
+            RoundedRectangle(cornerRadius: 24)
+                .strokeBorder(style: StrokeStyle(lineWidth: 3, dash: [5, 5]))
+                .foregroundStyle(.white)
+
+            VStack(alignment: .leading, spacing: 16) {
 
                 Text("Doppel\u{00AD}gänger")
-                    .font(.roobert(58, weight: .semibold))
+                    .font(.roobert(50, weight: .semibold))
                     .tracking(-2.4)
-                    .foregroundStyle(textColor)
+                    .foregroundStyle(.white)
                     .minimumScaleFactor(0.6)
                     .lineLimit(2)
+
+                Spacer().frame(height: 8)
+
+                HStack(spacing: 4) {
+                    Text("Hello, my name is")
+                        .font(.roobert(14, weight: .regular))
+                        .foregroundStyle(Color(hex: "999999"))
+
+                    if isEditingName {
+                        TextField("", text: $playerName)
+                            .font(.roobert(14, weight: .regular))
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .onSubmit {
+                                isEditingName = false
+                            }
+                    } else {
+                        Button(action: { isEditingName = true }) {
+                            Text(playerName.isEmpty ? "_____________" : playerName)
+                                .font(.roobert(14, weight: .regular))
+                                .foregroundStyle(playerName.isEmpty ? Color(hex: "999999") : .white)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    }
+
+                    Text("!")
+                        .font(.roobert(14, weight: .regular))
+                        .foregroundStyle(Color(hex: "999999"))
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(24)
@@ -81,7 +117,7 @@ struct HomeView: View {
 
     private var gameButtons: some View {
         VStack(spacing: 14) {
-            Button(action: onCreateLobby) {
+            Button(action: { onCreateLobby(playerName) }) {
                 Text("Create lobby")
                     .font(.roobert(24, weight: .regular))
             }
@@ -91,7 +127,7 @@ struct HomeView: View {
                 shadowOffset: 8
             ))
 
-            Button(action: onJoinLobby) {
+            Button(action: { onJoinLobby(playerName) }) {
                 Text("Join lobby")
                     .font(.roobert(24, weight: .regular))
             }

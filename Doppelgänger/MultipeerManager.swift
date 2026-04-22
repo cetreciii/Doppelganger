@@ -30,7 +30,7 @@ struct DiscoveredLobby: Identifiable {
 class MultipeerManager: NSObject, ObservableObject {
     private static let serviceType = "doppelganger"
 
-    let myPeerID: MCPeerID
+    var myPeerID: MCPeerID
     private var session: MCSession
     private var advertiser: MCNearbyServiceAdvertiser?
     private var browser: MCNearbyServiceBrowser?
