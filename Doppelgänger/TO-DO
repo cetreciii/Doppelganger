@@ -1,6 +1,10 @@
 *** FEATURES ***
 Multipeer connectivity
 Sound effects for buttons
+Apple's Foundation Models for AI writing story
+Add possibility to name the lobby
+Add points assignation for human stories so they can compete and can avoid cheating writing things such as "i'm the human, i'm not AI"
+Onboarding that let's you insert the name that will then be used as the name of the lobby
 
 *** KNOWN BUGS ***
 

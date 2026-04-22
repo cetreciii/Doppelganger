@@ -1,7 +1,7 @@
 import SwiftUI
 
 enum AppScreen {
-    case home, lobbyChoice, createLobby, joinLobby
+    case home, createLobby, joinLobby
 }
 
 struct ContentView: View {
@@ -12,24 +12,19 @@ struct ContentView: View {
         Group {
             switch screen {
             case .home:
-                HomeView {
-                    screen = .lobbyChoice
-                }
-            case .lobbyChoice:
-                LobbyView(
+                HomeView(
                     onCreateLobby: { screen = .createLobby },
-                    onJoinLobby: { screen = .joinLobby },
-                    onBack: { screen = .home }
+                    onJoinLobby: { screen = .joinLobby }
                 )
             case .createLobby:
                 CreateLobbyView(manager: manager) {
                     manager.reset()
-                    screen = .lobbyChoice
+                    screen = .home
                 }
             case .joinLobby:
                 JoinLobbyView(manager: manager) {
                     manager.reset()
-                    screen = .lobbyChoice
+                    screen = .home
                 }
             }
         }

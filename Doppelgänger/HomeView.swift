@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct HomeView: View {
-    var onNewGame: () -> Void = {}
+    var onCreateLobby: () -> Void = {}
+    var onJoinLobby: () -> Void = {}
 
     @Environment(\.colorScheme) private var colorScheme
 
@@ -30,12 +31,12 @@ struct HomeView: View {
 
                 Spacer().frame(height: 40)
 
-                roleChips
-                    .padding(.bottom, 50)
+//                roleChips
+//                    .padding(.bottom, 50)
 
                 Spacer()
 
-                newGameButton
+                gameButtons
                     .padding(.horizontal, 24)
                     .padding(.bottom, 52)
             }
@@ -103,18 +104,30 @@ struct HomeView: View {
             .rotationEffect(.degrees(angle))
     }
 
-    // MARK: - New Game Button
+    // MARK: - Game Buttons
 
-    private var newGameButton: some View {
-        Button(action: onNewGame) {
-            Text("New game")
-                .font(.roobert(24, weight: .regular))
+    private var gameButtons: some View {
+        VStack(spacing: 14) {
+            Button(action: onCreateLobby) {
+                Text("Create lobby")
+                    .font(.roobert(24, weight: .regular))
+            }
+            .buttonStyle(PlayfulPillButtonStyle(
+                background: .lemon500,
+                foreground: .ink,
+                shadowOffset: 8
+            ))
+
+            Button(action: onJoinLobby) {
+                Text("Join lobby")
+                    .font(.roobert(24, weight: .regular))
+            }
+            .buttonStyle(PlayfulPillButtonStyle(
+                background: .slushie500,
+                foreground: .ink,
+                shadowOffset: 8
+            ))
         }
-        .buttonStyle(PlayfulPillButtonStyle(
-            background: .lemon500,
-            foreground: .ink,
-            shadowOffset: 8
-        ))
     }
 }
 
