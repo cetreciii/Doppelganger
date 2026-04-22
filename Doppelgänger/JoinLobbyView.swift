@@ -182,43 +182,48 @@ struct JoinLobbyView: View {
                 .foregroundStyle(secondaryText)
                 .padding(.bottom, 14)
 
-            ZStack(alignment: .topLeading) {
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(cardBg)
-                    .shadow(color: .black.opacity(0.22), radius: 10, x: -4, y: 4)
-                RoundedRectangle(cornerRadius: 20)
-                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [14, 5]))
-                    .foregroundStyle(borderColor)
-
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack(spacing: 8) {
-                        settingChip(icon: "cpu", label: "\(manager.settings.numberOfAI) AI\(manager.settings.numberOfAI > 1 ? "s" : "")")
-                        settingChip(icon: "theatermasks.fill", label: "\(manager.settings.numberOfPretenders) Pretender\(manager.settings.numberOfPretenders > 1 ? "s" : "")")
-                    }
-                    HStack(spacing: 8) {
-                        settingChip(icon: "pencil", label: "Write \(formatTime(manager.settings.writingTime))")
-                        settingChip(icon: "hand.raised.fill", label: "Vote \(formatTime(manager.settings.votingTime))")
-                    }
-                }
-                .padding(20)
+            let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
+            LazyVGrid(columns: columns, spacing: 12) {
+                settingStatCard(
+                    value: "\(manager.settings.numberOfAI)",
+                    label: "AI\(manager.settings.numberOfAI > 1 ? "s" : "") in game",
+                    accent: .ube300
+                )
+                settingStatCard(
+                    value: "\(manager.settings.numberOfPretenders)",
+                    label: "Pretender\(manager.settings.numberOfPretenders > 1 ? "s" : "")",
+                    accent: .pomegranate400
+                )
+                settingStatCard(
+                    value: formatTime(manager.settings.writingTime),
+                    label: "Writing time",
+                    accent: .lemon500
+                )
+                settingStatCard(
+                    value: formatTime(manager.settings.votingTime),
+                    label: "Voting time",
+                    accent: .matcha300
+                )
             }
         }
     }
 
-    private func settingChip(icon: String, label: String) -> some View {
-        HStack(spacing: 6) {
-            Image(systemName: icon)
-                .font(.system(size: 11, weight: .medium))
-                .foregroundStyle(secondaryText)
+    private func settingStatCard(value: String, label: String, accent: Color) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(value)
+                .font(.roobert(32, weight: .semibold))
+                .foregroundStyle(isLight ? textColor : accent)
+                .tracking(-0.5)
             Text(label)
-                .font(.roobert(13, weight: .medium))
-                .foregroundStyle(textColor)
+                .font(.roobert(12, weight: .medium))
+                .foregroundStyle(secondaryText)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
         .background(
-            Capsule()
-                .fill(isLight ? Color.oatLight : Color(hex: "32037d"))
+            RoundedRectangle(cornerRadius: 14)
+                .fill(accent.opacity(isLight ? 0.15 : 0.12))
         )
     }
 
