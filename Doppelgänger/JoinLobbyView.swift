@@ -174,36 +174,58 @@ struct JoinLobbyView: View {
     }
 
     private var settingsPreview: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 0) {
             Text("Game settings")
                 .font(.roobert(13, weight: .semibold))
                 .tracking(0.6)
                 .textCase(.uppercase)
                 .foregroundStyle(secondaryText)
+                .padding(.bottom, 14)
 
-            HStack(spacing: 8) {
-                settingsBadge(label: "\(manager.settings.numberOfAI) AI", color: .ube800)
-                settingsBadge(label: "\(manager.settings.numberOfPretenders) Pretender\(manager.settings.numberOfPretenders > 1 ? "s" : "")", color: .pomegranate400)
-                settingsBadge(label: "Write \(formatTime(manager.settings.writingTime))", color: .slushie800)
-                settingsBadge(label: "Vote \(formatTime(manager.settings.votingTime))", color: .matcha600)
+            ZStack(alignment: .topLeading) {
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(cardBg)
+                    .shadow(color: .black.opacity(0.22), radius: 10, x: -4, y: 4)
+                RoundedRectangle(cornerRadius: 20)
+                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [14, 5]))
+                    .foregroundStyle(borderColor)
+
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack(spacing: 8) {
+                        settingChip(icon: "cpu", label: "\(manager.settings.numberOfAI) AI\(manager.settings.numberOfAI > 1 ? "s" : "")")
+                        settingChip(icon: "theatermasks.fill", label: "\(manager.settings.numberOfPretenders) Pretender\(manager.settings.numberOfPretenders > 1 ? "s" : "")")
+                    }
+                    HStack(spacing: 8) {
+                        settingChip(icon: "pencil", label: "Write \(formatTime(manager.settings.writingTime))")
+                        settingChip(icon: "hand.raised.fill", label: "Vote \(formatTime(manager.settings.votingTime))")
+                    }
+                }
+                .padding(20)
             }
-            .flexibleFrame()
         }
     }
 
-    private func settingsBadge(label: String, color: Color) -> some View {
-        Text(label)
-            .font(.roobert(12, weight: .semibold))
-            .foregroundStyle(.white)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
-            .background(Capsule().fill(color))
+    private func settingChip(icon: String, label: String) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(secondaryText)
+            Text(label)
+                .font(.roobert(13, weight: .medium))
+                .foregroundStyle(textColor)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(
+            Capsule()
+                .fill(isLight ? Color.oatLight : Color(hex: "32037d"))
+        )
     }
 
     private var playersSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text("Players")
+                Text("Players in lobby")
                     .font(.roobert(13, weight: .semibold))
                     .tracking(0.6)
                     .textCase(.uppercase)
@@ -213,20 +235,38 @@ struct JoinLobbyView: View {
                     .font(.roobert(13, weight: .semibold))
                     .foregroundStyle(secondaryText)
             }
+            .padding(.bottom, 14)
 
-            if manager.allPlayerNames.isEmpty {
-                HStack(spacing: 10) {
-                    ProgressView().tint(secondaryText)
-                    Text("Loading players…")
-                        .font(.roobert(15))
-                        .foregroundStyle(secondaryText)
-                }
-            } else {
-                FlowLayout(spacing: 8) {
-                    ForEach(manager.allPlayerNames, id: \.self) { name in
-                        playerChip(name, isYou: name == manager.myPeerID.displayName)
+            ZStack(alignment: .topLeading) {
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(cardBg)
+                    .shadow(color: .black.opacity(0.22), radius: 10, x: -4, y: 4)
+                RoundedRectangle(cornerRadius: 20)
+                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [14, 5]))
+                    .foregroundStyle(borderColor)
+
+                Group {
+                    if manager.allPlayerNames.isEmpty {
+                        HStack(spacing: 10) {
+                            ProgressView().tint(secondaryText)
+                            Text("Loading players…")
+                                .font(.roobert(15))
+                                .foregroundStyle(secondaryText)
+                        }
+                        .transition(.opacity.combined(with: .scale(scale: 0.95, anchor: .topLeading)))
+                    } else {
+                        VStack(alignment: .leading, spacing: 8) {
+                            ForEach(manager.allPlayerNames, id: \.self) { name in
+                                playerChip(name, isYou: name == manager.myPeerID.displayName)
+                                    .transition(.scale(scale: 0.8).combined(with: .opacity))
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .transition(.opacity.combined(with: .scale(scale: 0.95, anchor: .topLeading)))
                     }
                 }
+                .animation(.spring(response: 0.4, dampingFraction: 0.75), value: manager.allPlayerNames)
+                .padding(20)
             }
         }
     }
@@ -259,11 +299,6 @@ struct JoinLobbyView: View {
     }
 }
 
-private extension View {
-    func flexibleFrame() -> some View {
-        self.frame(maxWidth: .infinity, alignment: .leading)
-    }
-}
 
 #Preview("Browse — Light") {
     JoinLobbyView(manager: MultipeerManager(), onBack: {})
