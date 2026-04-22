@@ -8,7 +8,6 @@ enum AppScreen {
 struct ContentView: View {
     @StateObject private var manager = MultipeerManager()
     @State private var screen: AppScreen = .home
-    @State private var playerName: String = ""
     @State private var showNameError: Bool = false
 
     var body: some View {
@@ -20,7 +19,6 @@ struct ContentView: View {
                         if name.trimmingCharacters(in: .whitespaces).isEmpty {
                             showNameError = true
                         } else {
-                            playerName = name
                             manager.myPeerID = MCPeerID(displayName: name)
                             screen = .createLobby
                         }
@@ -29,7 +27,6 @@ struct ContentView: View {
                         if name.trimmingCharacters(in: .whitespaces).isEmpty {
                             showNameError = true
                         } else {
-                            playerName = name
                             manager.myPeerID = MCPeerID(displayName: name)
                             screen = .joinLobby
                         }

@@ -5,7 +5,6 @@ struct HomeView: View {
     var onJoinLobby: (String) -> Void = { _ in }
 
     @State private var playerName: String = ""
-    @State private var isEditingName: Bool = false
 
     @Environment(\.colorScheme) private var colorScheme
 
@@ -52,14 +51,14 @@ struct HomeView: View {
                 .shadow(color: .black.opacity(0.05), radius: 0, x: 0, y: -1)
 
             RoundedRectangle(cornerRadius: 24)
-                .strokeBorder(style: StrokeStyle(lineWidth: 3))
+                .strokeBorder(style: StrokeStyle(lineWidth: 5))
                 .foregroundStyle(.black)
 
             RoundedRectangle(cornerRadius: 24)
-                .strokeBorder(style: StrokeStyle(lineWidth: 3, dash: [5, 5]))
+                .strokeBorder(style: StrokeStyle(lineWidth: 5, dash: [5, 5]))
                 .foregroundStyle(.white)
 
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
 
                 Text("Doppel\u{00AD}gänger")
                     .font(.roobert(50, weight: .semibold))
@@ -67,34 +66,19 @@ struct HomeView: View {
                     .foregroundStyle(.white)
                     .minimumScaleFactor(0.6)
                     .lineLimit(2)
-
-                Spacer().frame(height: 8)
-
-                HStack(spacing: 4) {
-                    Text("Hello, my name is")
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(24)
+            
+            VStack(alignment: .leading, spacing: 8) {
+                Spacer()
+                HStack(spacing: 0) {
+                    Text("Hello, my name is ")
                         .font(.roobert(14, weight: .regular))
-                        .foregroundStyle(Color(hex: "999999"))
-
-                    if isEditingName {
-                        TextField("", text: $playerName)
-                            .font(.roobert(14, weight: .regular))
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .onSubmit {
-                                isEditingName = false
-                            }
-                    } else {
-                        Button(action: { isEditingName = true }) {
-                            Text(playerName.isEmpty ? "_____________" : playerName)
-                                .font(.roobert(14, weight: .regular))
-                                .foregroundStyle(playerName.isEmpty ? Color(hex: "999999") : .white)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                    }
-
-                    Text("!")
+                        .foregroundStyle(.white)
+                    TextField("", text: $playerName, prompt: Text("_____________").foregroundColor(Color(hex: "999999")))
                         .font(.roobert(14, weight: .regular))
-                        .foregroundStyle(Color(hex: "999999"))
+                        .foregroundStyle(.white)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
