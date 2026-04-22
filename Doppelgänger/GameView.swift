@@ -118,11 +118,15 @@ struct GameView: View {
 
     // MARK: - Words Section
 
-    private let wordStyles: [(bg: Color, fg: Color, angle: Double)] = [
-        (.lemon500,   .ink,      -2.5),
-        (.slushie500, .ink,       1.5),
-        (.matcha300,  .matcha800, -1.0),
+    private let wordStyles: [(bg: Color, fg: Color)] = [
+        (.lemon500,   .ink),
+        (.slushie500, .ink),
+        (.matcha300,  .matcha800),
     ]
+
+    @State private var wordAngles: [Double] = (0..<3).map { _ in
+        Double.random(in: -3.5...3.5)
+    }
 
     private var wordsSection: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -136,18 +140,18 @@ struct GameView: View {
             VStack(spacing: 10) {
                 if isLoadingWords {
                     ForEach(0..<3, id: \.self) { i in
-                        skeletonCard(angle: wordStyles[i].angle)
+                        skeletonCard(angle: wordAngles[i])
                     }
                 } else {
                     ForEach(Array(words.enumerated()), id: \.offset) { index, word in
-                        wordCard(word, style: wordStyles[index % wordStyles.count])
+                        wordCard(word, style: wordStyles[index % wordStyles.count], angle: wordAngles[index % wordAngles.count])
                     }
                 }
             }
         }
     }
 
-    private func wordCard(_ word: String, style: (bg: Color, fg: Color, angle: Double)) -> some View {
+    private func wordCard(_ word: String, style: (bg: Color, fg: Color), angle: Double) -> some View {
         let shadowColor: Color = isLight ? .black : .ubeDeep
         return Text(word)
             .font(.roobert(30, weight: .semibold))
@@ -161,7 +165,7 @@ struct GameView: View {
                     .fill(style.bg)
                     .shadow(color: shadowColor, radius: 0, x: -5, y: 5)
             )
-            .rotationEffect(.degrees(style.angle))
+            .rotationEffect(.degrees(angle))
     }
 
     private func skeletonCard(angle: Double) -> some View {
