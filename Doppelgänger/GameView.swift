@@ -13,6 +13,7 @@ struct GameView: View {
     private var cardBg: Color { isLight ? .white : .ube800 }
     private var secondaryText: Color { isLight ? .warmSilver : .ube300 }
     private var trackColor: Color { isLight ? .oatLight : Color(hex: "3a1480") }
+    private var borderColor: Color { isLight ? .oatBorder : .darkBorder }
 
     private var writingTime: Int { manager.settings.writingTime }
 
@@ -90,22 +91,38 @@ struct GameView: View {
     private var timerRing: some View {
         ZStack {
             Circle()
-                .stroke(trackColor, lineWidth: 6)
-                .frame(width: 88, height: 88)
+                .fill(cardBg)
+                .frame(width: 112, height: 112)
+                .shadow(color: .black.opacity(0.22), radius: 8, x: -3, y: 3)
+
+            Circle()
+                .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [8, 5]))
+                .foregroundStyle(borderColor)
+                .frame(width: 112, height: 112)
+
+            Circle()
+                .stroke(trackColor, lineWidth: 5)
+                .frame(width: 82, height: 82)
 
             Circle()
                 .trim(from: 0, to: CGFloat(timeRemaining) / CGFloat(max(writingTime, 1)))
-                .stroke(timerColor, style: StrokeStyle(lineWidth: 6, lineCap: .round))
-                .frame(width: 88, height: 88)
+                .stroke(timerColor, style: StrokeStyle(lineWidth: 5, lineCap: .round))
+                .frame(width: 82, height: 82)
                 .rotationEffect(.degrees(-90))
                 .animation(.linear(duration: 1), value: timeRemaining)
 
-            Text("\(timeRemaining)")
-                .font(.roobert(30, weight: .semibold))
-                .foregroundStyle(textColor)
-                .monospacedDigit()
-                .contentTransition(.numericText(countsDown: true))
-                .animation(.linear(duration: 0.3), value: timeRemaining)
+            VStack(spacing: 1) {
+                Text("\(timeRemaining)")
+                    .font(.roobert(30, weight: .semibold))
+                    .foregroundStyle(textColor)
+                    .monospacedDigit()
+                    .contentTransition(.numericText(countsDown: true))
+                    .animation(.linear(duration: 0.3), value: timeRemaining)
+                Text("sec")
+                    .font(.roobert(11, weight: .medium))
+                    .tracking(0.5)
+                    .foregroundStyle(secondaryText)
+            }
         }
     }
 
@@ -183,7 +200,11 @@ struct GameView: View {
         ZStack(alignment: .topLeading) {
             RoundedRectangle(cornerRadius: 20)
                 .fill(cardBg)
-                .shadow(color: .black.opacity(0.25), radius: 8, x: 0, y: 2)
+                .shadow(color: .black.opacity(0.25), radius: 10, x: -4, y: 4)
+
+            RoundedRectangle(cornerRadius: 20)
+                .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [14, 5]))
+                .foregroundStyle(borderColor)
 
             if storyText.isEmpty {
                 Text("Write your story here…")
@@ -213,37 +234,43 @@ struct GameView: View {
     }
 
     private var timesUpCard: some View {
-        let background = RoundedRectangle(cornerRadius: 28)
-            .fill(cardBg)
-            .shadow(color: .black.opacity(0.3), radius: 24, x: 0, y: 8)
-        return VStack(spacing: 12) {
+        let shadowColor: Color = isLight ? .black : .ubeDeep
+        return VStack(spacing: 8) {
             Text("Time's up!")
-                .font(.roobert(48, weight: .semibold))
-                .foregroundStyle(textColor)
-                .tracking(-2)
+                .font(.roobert(52, weight: .semibold))
+                .foregroundStyle(Color.ink)
+                .tracking(-2.5)
             Text("Pens down.")
                 .font(.roobert(20))
-                .foregroundStyle(secondaryText)
+                .foregroundStyle(Color.ink.opacity(0.55))
         }
         .padding(.horizontal, 40)
         .padding(.vertical, 44)
-        .background(background)
+        .background(
+            RoundedRectangle(cornerRadius: 28)
+                .fill(Color.pomegranate400)
+                .shadow(color: shadowColor, radius: 0, x: -7, y: 7)
+        )
         .padding(.horizontal, 40)
+        .rotationEffect(.degrees(-2.5))
     }
 
     // MARK: - Game Ended
 
     private var gameEndedView: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 10) {
             Spacer()
             Text("Game ended")
                 .font(.roobert(44, weight: .semibold))
                 .foregroundStyle(textColor)
                 .tracking(-1.8)
-                .transition(.opacity)
+            Text("Well played.")
+                .font(.roobert(20))
+                .foregroundStyle(secondaryText)
             Spacer()
         }
         .frame(maxWidth: .infinity)
+        .multilineTextAlignment(.center)
     }
 
     // MARK: - Word Generation (host only)

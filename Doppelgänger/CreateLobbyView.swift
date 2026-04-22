@@ -94,10 +94,11 @@ struct CreateLobbyView: View {
             ZStack {
                 RoundedRectangle(cornerRadius: 20)
                     .fill(cardBg)
-                    .shadow(color: .black.opacity(0.25), radius: 8, x: 0, y: 1)
+                    .shadow(color: .black.opacity(0.22), radius: 10, x: -4, y: 4)
 
                 RoundedRectangle(cornerRadius: 20)
-                    .strokeBorder(borderColor.opacity(0.5), lineWidth: 1)
+                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [14, 5]))
+                    .foregroundStyle(borderColor)
 
                 VStack(spacing: 0) {
                     stepperRow(
@@ -134,7 +135,7 @@ struct CreateLobbyView: View {
     // MARK: - Players Card
 
     private var playersCard: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Text("Players in lobby")
                     .font(.roobert(13, weight: .semibold))
@@ -146,15 +147,29 @@ struct CreateLobbyView: View {
                     .font(.roobert(13, weight: .semibold))
                     .foregroundStyle(secondaryText)
             }
+            .padding(.bottom, 14)
 
-            if manager.allPlayerNames.isEmpty {
-                waitingIndicator
-            } else {
-                FlowLayout(spacing: 8) {
-                    ForEach(manager.allPlayerNames, id: \.self) { name in
-                        playerChip(name, isYou: name == manager.myPeerID.displayName)
+            ZStack(alignment: .topLeading) {
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(cardBg)
+                    .shadow(color: .black.opacity(0.22), radius: 10, x: -4, y: 4)
+
+                RoundedRectangle(cornerRadius: 20)
+                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [14, 5]))
+                    .foregroundStyle(borderColor)
+
+                Group {
+                    if manager.allPlayerNames.isEmpty {
+                        waitingIndicator
+                    } else {
+                        FlowLayout(spacing: 8) {
+                            ForEach(manager.allPlayerNames, id: \.self) { name in
+                                playerChip(name, isYou: name == manager.myPeerID.displayName)
+                            }
+                        }
                     }
                 }
+                .padding(20)
             }
         }
     }
