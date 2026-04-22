@@ -3,3 +3,6 @@ Multipeer connectivity
 Sound effects for buttons
 
 *** KNOWN BUGS ***
+
+*** IDEAS ***
+It could be useful to think about the HomeView. Should I keep the "New game" button or should I directly put "Create lobby" and "Join lobby"? Because maybe in the future I could implement a "Profile" where the user can track its statistics and add cosmetic elements to enhance personalization.

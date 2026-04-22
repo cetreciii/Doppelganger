@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct HomeView: View {
+    var onNewGame: () -> Void = {}
+
     @Environment(\.colorScheme) private var colorScheme
 
     private var isLight: Bool { colorScheme == .light }
@@ -29,6 +31,7 @@ struct HomeView: View {
                 Spacer().frame(height: 40)
 
                 roleChips
+                    .padding(.bottom, 50)
 
                 Spacer()
 
@@ -103,10 +106,8 @@ struct HomeView: View {
     // MARK: - New Game Button
 
     private var newGameButton: some View {
-        Button {
-            // TODO: navigate to Lobby
-        } label: {
-            Text("New Game")
+        Button(action: onNewGame) {
+            Text("New game")
                 .font(.roobert(24, weight: .regular))
         }
         .buttonStyle(PlayfulPillButtonStyle(
