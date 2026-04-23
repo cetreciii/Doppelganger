@@ -30,7 +30,12 @@ struct DiscoveredLobby: Identifiable {
 class MultipeerManager: NSObject, ObservableObject {
     private static let serviceType = "doppelganger"
 
-    var myPeerID: MCPeerID
+    @Published var myPeerID: MCPeerID {
+        didSet {
+            session = MCSession(peer: myPeerID, securityIdentity: nil, encryptionPreference: .required)
+            session.delegate = self
+        }
+    }
     private var session: MCSession
     private var advertiser: MCNearbyServiceAdvertiser?
     private var browser: MCNearbyServiceBrowser?
@@ -44,8 +49,9 @@ class MultipeerManager: NSObject, ObservableObject {
     @Published var gameWords: [String] = []
 
     override init() {
-        myPeerID = MCPeerID(displayName: UIDevice.current.name)
-        session = MCSession(peer: myPeerID, securityIdentity: nil, encryptionPreference: .required)
+        let initialPeerID = MCPeerID(displayName: UIDevice.current.name)
+        myPeerID = initialPeerID
+        session = MCSession(peer: initialPeerID, securityIdentity: nil, encryptionPreference: .required)
         super.init()
         session.delegate = self
     }
@@ -87,6 +93,7 @@ class MultipeerManager: NSObject, ObservableObject {
     }
 
     func joinLobby(_ lobby: DiscoveredLobby) {
+        print("[MPC] Attempting to join lobby: \(lobby.hostName)")
         browser?.invitePeer(lobby.peer, to: session, withContext: nil, timeout: 15)
     }
 
@@ -125,6 +132,7 @@ extension MultipeerManager: MCSessionDelegate {
             guard let self else { return }
             switch state {
             case .connected:
+                print("[MPC] Peer connected: \(peerID.displayName)")
                 if !self.connectedPeers.contains(peerID) {
                     self.connectedPeers.append(peerID)
                 }
@@ -136,6 +144,7 @@ extension MultipeerManager: MCSessionDelegate {
                     self.send(.playerListUpdated(self.allPlayerNames), to: self.connectedPeers)
                 }
             case .notConnected:
+                print("[MPC] Peer disconnected: \(peerID.displayName)")
                 self.connectedPeers.removeAll { $0 == peerID }
                 if self.isHost {
                     self.allPlayerNames.removeAll { $0 == peerID.displayName }
@@ -143,7 +152,9 @@ extension MultipeerManager: MCSessionDelegate {
                         self.send(.playerListUpdated(self.allPlayerNames), to: self.connectedPeers)
                     }
                 }
-            default:
+            case .connecting:
+                print("[MPC] Peer connecting: \(peerID.displayName)")
+            @unknown default:
                 break
             }
         }
@@ -175,7 +186,7 @@ extension MultipeerManager: MCNearbyServiceAdvertiserDelegate {
     }
 
     func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didNotStartAdvertisingPeer error: Error) {
-        print("[MPC] Advertiser error: \(error)")
+        print("[MPC] Advertiser error: \(error.localizedDescription)")
     }
 }
 
@@ -198,6 +209,6 @@ extension MultipeerManager: MCNearbyServiceBrowserDelegate {
     }
 
     func browser(_ browser: MCNearbyServiceBrowser, didNotStartBrowsingForPeers error: Error) {
-        print("[MPC] Browser error: \(error)")
+        print("[MPC] Browser error: \(error.localizedDescription)")
     }
 }

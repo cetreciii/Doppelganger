@@ -10,7 +10,6 @@ extension Color {
 
     static let oatBorder = Color(hex: "696762")
     static let oatLight = Color(hex: "eee9df")
-    static let darkBorder = Color(hex: "aabbda")
 
     static let matcha300 = Color(hex: "84e7a5")
     static let matcha600 = Color(hex: "078a52")
@@ -26,8 +25,6 @@ extension Color {
 
     static let ube300 = Color(hex: "c1b0ff")
     static let ube800 = Color(hex: "43089f")
-    static let ube900 = Color(hex: "32037d")
-    static let ubeDeep = Color(hex: "160040")
 
     static let pomegranate400 = Color(hex: "fc7981")
 
@@ -70,10 +67,8 @@ struct PlayfulPillButtonStyle: ButtonStyle {
     var foreground: Color
     var shadowOffset: CGFloat = 5
 
-    @Environment(\.colorScheme) private var colorScheme
-
     func makeBody(configuration: Configuration) -> some View {
-        let shadowColor: Color = colorScheme == .dark ? .ubeDeep : .black
+        let shadowColor: Color = .black
 
         return configuration.label
             .frame(maxWidth: .infinity)

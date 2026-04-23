@@ -6,14 +6,12 @@ struct GameView: View {
     @ObservedObject var manager: MultipeerManager
     let onGameEnd: () -> Void
 
-    @Environment(\.colorScheme) private var colorScheme
-    private var isLight: Bool { colorScheme == .light }
-    private var bgColor: Color { isLight ? .canvas : .ube900 }
-    private var textColor: Color { isLight ? .ink : .white }
-    private var cardBg: Color { isLight ? .white : .ube800 }
-    private var secondaryText: Color { isLight ? .warmSilver : .ube300 }
-    private var trackColor: Color { isLight ? .oatLight : Color(hex: "3a1480") }
-    private var borderColor: Color { isLight ? .oatBorder : .darkBorder }
+    private var bgColor: Color { .canvas }
+    private var textColor: Color { .ink }
+    private var cardBg: Color { .white }
+    private var secondaryText: Color { .warmSilver }
+    private var trackColor: Color { .oatLight }
+    private var borderColor: Color { .oatBorder }
 
     private var writingTime: Int { manager.settings.writingTime }
 
@@ -169,7 +167,7 @@ struct GameView: View {
     }
 
     private func wordCard(_ word: String, style: (bg: Color, fg: Color), angle: Double) -> some View {
-        let shadowColor: Color = isLight ? .black : .ubeDeep
+        let shadowColor: Color = .black
         return Text(word)
             .font(.roobert(30, weight: .semibold))
             .tracking(-0.8)
@@ -234,7 +232,7 @@ struct GameView: View {
     }
 
     private var timesUpCard: some View {
-        let shadowColor: Color = isLight ? .black : .ubeDeep
+        let shadowColor: Color = .black
         return VStack(spacing: 8) {
             Text("Time's up!")
                 .font(.roobert(52, weight: .semibold))
@@ -313,10 +311,6 @@ struct GameView: View {
     }
 }
 
-#Preview("Light") {
+#Preview {
     GameView(manager: MultipeerManager(), onGameEnd: {})
-}
-#Preview("Dark") {
-    GameView(manager: MultipeerManager(), onGameEnd: {})
-        .preferredColorScheme(.dark)
 }

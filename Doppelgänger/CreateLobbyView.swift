@@ -7,14 +7,12 @@ struct CreateLobbyView: View {
 
     @State private var settings = GameSettings()
 
-    @Environment(\.colorScheme) private var colorScheme
-    private var isLight: Bool { colorScheme == .light }
-    private var bgColor: Color { isLight ? .canvas : .ube900 }
-    private var textColor: Color { isLight ? .ink : .white }
-    private var cardBg: Color { isLight ? .white : .ube800 }
-    private var borderColor: Color { isLight ? .oatBorder : .darkBorder }
-    private var secondaryText: Color { isLight ? .warmSilver : .ube300 }
-    private var rowDivider: Color { isLight ? .oatLight : Color(hex: "3a1480") }
+    private var bgColor: Color { .canvas }
+    private var textColor: Color { .ink }
+    private var cardBg: Color { .white }
+    private var borderColor: Color { .oatBorder }
+    private var secondaryText: Color { .warmSilver }
+    private var rowDivider: Color { .oatLight }
 
     var canStart: Bool { manager.connectedPeers.count >= 1 }
 
@@ -200,7 +198,7 @@ struct CreateLobbyView: View {
                 .font(.roobert(22, weight: .regular))
         }
         .buttonStyle(PlayfulPillButtonStyle(
-            background: canStart ? .matcha300 : (isLight ? .oatLight : Color(hex: "3a1480")),
+            background: canStart ? .matcha300 : .oatLight,
             foreground: canStart ? .matcha800 : secondaryText,
             shadowOffset: canStart ? 7 : 0
         ))
@@ -246,7 +244,7 @@ struct CreateLobbyView: View {
                 .frame(width: 36, height: 36)
                 .background(
                     RoundedRectangle(cornerRadius: 10)
-                        .fill(isLight ? Color.oatLight : Color(hex: "32037d"))
+                        .fill(Color.oatLight)
                 )
         }
     }
@@ -263,11 +261,11 @@ struct CreateLobbyView: View {
                     } label: {
                         Text(optLabel)
                             .font(.roobert(13, weight: value.wrappedValue == option ? .semibold : .regular))
-                            .foregroundStyle(value.wrappedValue == option ? (isLight ? .white : .ink) : secondaryText)
+                            .foregroundStyle(value.wrappedValue == option ? .white : secondaryText)
                             .padding(.horizontal, 14)
                             .padding(.vertical, 8)
                             .background(
-                                Capsule().fill(value.wrappedValue == option ? (isLight ? Color.ube800 : .white) : (isLight ? Color.oatLight : Color(hex: "32037d")))
+                                Capsule().fill(value.wrappedValue == option ? Color.ube800 : .oatLight)
                             )
                     }
                 }
@@ -291,7 +289,7 @@ struct CreateLobbyView: View {
         .padding(.vertical, 7)
         .background(
             Capsule()
-                .fill(isYou ? (isLight ? Color.lemon400.opacity(0.3) : Color.lemon500.opacity(0.2)) : (isLight ? Color.oatLight : Color(hex: "3a1480")))
+                .fill(isYou ? Color.lemon400.opacity(0.3) : .oatLight)
         )
     }
 }
@@ -346,10 +344,6 @@ struct FlowLayout: Layout {
     }
 }
 
-#Preview("Light") {
+#Preview {
     CreateLobbyView(manager: MultipeerManager(), onBack: {})
-}
-#Preview("Dark") {
-    CreateLobbyView(manager: MultipeerManager(), onBack: {})
-        .preferredColorScheme(.dark)
 }

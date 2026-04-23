@@ -6,14 +6,10 @@ struct HomeView: View {
 
     @State private var playerName: String = ""
 
-    @Environment(\.colorScheme) private var colorScheme
-
-    private var isLight: Bool { colorScheme == .light }
-
-    private var backgroundColor: Color { isLight ? .canvas : .ube900 }
-    private var textColor: Color { isLight ? .ink : .white }
-    private var cardBackground: Color { isLight ? .white : .ube800 }
-    private var borderColor: Color { isLight ? .oatBorder : .darkBorder }
+    private var backgroundColor: Color { .canvas }
+    private var textColor: Color { .ink }
+    private var cardBackground: Color { .white }
+    private var borderColor: Color { .oatBorder }
 
     var body: some View {
         ZStack {
@@ -124,11 +120,6 @@ struct HomeView: View {
     }
 }
 
-#Preview("Light") {
+#Preview {
     HomeView()
-}
-
-#Preview("Dark") {
-    HomeView()
-        .preferredColorScheme(.dark)
 }

@@ -5,13 +5,11 @@ struct JoinLobbyView: View {
     @ObservedObject var manager: MultipeerManager
     let onBack: () -> Void
 
-    @Environment(\.colorScheme) private var colorScheme
-    private var isLight: Bool { colorScheme == .light }
-    private var bgColor: Color { isLight ? .canvas : .ube900 }
-    private var textColor: Color { isLight ? .ink : .white }
-    private var cardBg: Color { isLight ? .white : .ube800 }
-    private var borderColor: Color { isLight ? .oatBorder : .darkBorder }
-    private var secondaryText: Color { isLight ? .warmSilver : .ube300 }
+    private var bgColor: Color { .canvas }
+    private var textColor: Color { .ink }
+    private var cardBg: Color { .white }
+    private var borderColor: Color { .oatBorder }
+    private var secondaryText: Color { .warmSilver }
 
     private var isJoined: Bool { !manager.connectedPeers.isEmpty }
 
@@ -212,7 +210,7 @@ struct JoinLobbyView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(value)
                 .font(.roobert(32, weight: .semibold))
-                .foregroundStyle(isLight ? textColor : accent)
+                .foregroundStyle(textColor)
                 .tracking(-0.5)
             Text(label)
                 .font(.roobert(12, weight: .medium))
@@ -223,7 +221,7 @@ struct JoinLobbyView: View {
         .padding(.vertical, 14)
         .background(
             RoundedRectangle(cornerRadius: 14)
-                .fill(accent.opacity(isLight ? 0.15 : 0.12))
+                .fill(accent.opacity(0.15))
         )
     }
 
@@ -291,9 +289,7 @@ struct JoinLobbyView: View {
         .padding(.vertical, 7)
         .background(
             Capsule()
-                .fill(isYou
-                    ? (isLight ? Color.lemon400.opacity(0.3) : Color.lemon500.opacity(0.2))
-                    : (isLight ? Color.oatLight : Color(hex: "3a1480")))
+                .fill(isYou ? Color.lemon400.opacity(0.3) : .oatLight)
         )
     }
 
@@ -305,10 +301,6 @@ struct JoinLobbyView: View {
 }
 
 
-#Preview("Browse — Light") {
+#Preview {
     JoinLobbyView(manager: MultipeerManager(), onBack: {})
-}
-#Preview("Browse — Dark") {
-    JoinLobbyView(manager: MultipeerManager(), onBack: {})
-        .preferredColorScheme(.dark)
 }
