@@ -95,6 +95,9 @@ struct CreateLobbyView: View {
                     .shadow(color: .black.opacity(0.22), radius: 10, x: -4, y: 4)
 
                 RoundedRectangle(cornerRadius: 20)
+                    .foregroundStyle(Color.white)
+                
+                RoundedRectangle(cornerRadius: 20)
                     .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [14, 5]))
                     .foregroundStyle(borderColor)
 
@@ -148,10 +151,14 @@ struct CreateLobbyView: View {
             .padding(.bottom, 14)
 
             ZStack(alignment: .topLeading) {
+                
                 RoundedRectangle(cornerRadius: 20)
                     .fill(cardBg)
                     .shadow(color: .black.opacity(0.22), radius: 10, x: -4, y: 4)
-
+                
+                RoundedRectangle(cornerRadius: 20)
+                    .foregroundStyle(Color.white)
+                
                 RoundedRectangle(cornerRadius: 20)
                     .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [14, 5]))
                     .foregroundStyle(borderColor)

@@ -30,7 +30,7 @@ struct ResultsView: View {
     @State private var verdictVisible = false
     @State private var podiumStories: [StoryResult] = []
     @State private var podiumRevealed: Int = 0
-
+    
     private var results: [StoryResult] {
         manager.allStories.map { story -> StoryResult in
             let name = story.playerName
@@ -172,19 +172,22 @@ struct ResultsView: View {
         VStack(alignment: .leading, spacing: 0) {
             Text(story.story)
                 .font(.roobert(17))
-                .foregroundStyle(Color.ink)
+                .foregroundStyle(Color.white)
                 .lineSpacing(4)
                 .padding(20)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color.white)
-                .shadow(color: .black, radius: 0, x: -5, y: 5)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .strokeBorder(Color.oatBorder, lineWidth: 1)
-                )
+            ZStack {
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color.ube800)
+                    .shadow(color: .black.opacity(0.3), radius: 10, x: -4, y: 4)
+                RoundedRectangle(cornerRadius: 20)
+                    .strokeBorder(Color.black, lineWidth: 2)
+                RoundedRectangle(cornerRadius: 20)
+                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [5, 5]))
+                    .foregroundStyle(Color.white)
+            }
         )
     }
 
@@ -248,7 +251,7 @@ struct ResultsView: View {
                         .foregroundStyle(Color.lemon500)
                     Text("\(result.totalStars)")
                         .font(.roobert(14, weight: .semibold))
-                        .foregroundStyle(Color.ink)
+                        .foregroundStyle(Color.white)
                 }
             }
             .padding(.horizontal, 16)
@@ -257,25 +260,28 @@ struct ResultsView: View {
 
             Text(result.story.story)
                 .font(.roobert(15))
-                .foregroundStyle(Color.ink)
+                .foregroundStyle(Color.white)
                 .lineSpacing(3)
                 .padding(.horizontal, 16)
                 .padding(.bottom, 10)
 
             Text("by \(result.story.playerName)")
                 .font(.roobert(12, weight: .medium))
-                .foregroundStyle(Color.warmSilver)
+                .foregroundStyle(Color.white.opacity(0.55))
                 .padding(.horizontal, 16)
                 .padding(.bottom, 14)
         }
         .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color.white)
-                .shadow(color: .black, radius: 0, x: -5, y: 5)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .strokeBorder(Color.oatBorder, lineWidth: 1)
-                )
+            ZStack {
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color.ube800)
+                    .shadow(color: .black.opacity(0.3), radius: 10, x: -4, y: 4)
+                RoundedRectangle(cornerRadius: 20)
+                    .strokeBorder(Color.black, lineWidth: 2)
+                RoundedRectangle(cornerRadius: 20)
+                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [5, 5]))
+                    .foregroundStyle(Color.white)
+            }
         )
     }
 

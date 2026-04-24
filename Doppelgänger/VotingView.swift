@@ -1,5 +1,6 @@
 import SwiftUI
 import MultipeerConnectivity
+internal import Combine
 
 struct VotingView: View {
     @ObservedObject var manager: MultipeerManager
@@ -10,11 +11,15 @@ struct VotingView: View {
     @State private var aiVote: String? = nil
     @State private var pretenderVote: String? = nil
     @State private var votingDone = false
+    @State private var timeRemaining: Int = 0
 
     private var myName: String { manager.myPeerID.displayName }
     private var stories: [PlayerStory] { manager.allStories }
+    private var votingTime: Int { manager.settings.votingTime }
 
     private var isLoading: Bool { stories.isEmpty }
+
+    private let ticker = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
         ZStack {
@@ -32,6 +37,17 @@ struct VotingView: View {
         .animation(.spring(response: 0.4, dampingFraction: 0.75), value: votingDone)
         .onChange(of: manager.revealPhase) { _, reveal in
             if reveal { onReveal() }
+        }
+        .onAppear { timeRemaining = votingTime }
+        .onReceive(ticker) { _ in
+            guard !votingDone else { return }
+            if timeRemaining > 0 {
+                timeRemaining -= 1
+            } else if !votingDone {
+                submitAllVotes()
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) { votingDone = true }
+                manager.markVotingComplete()
+            }
         }
     }
 
@@ -75,7 +91,8 @@ struct VotingView: View {
     }
 
     private var header: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: 12) {
+            timerRing
             Text("Vote")
                 .font(.roobert(38, weight: .semibold))
                 .foregroundStyle(Color.ink)
@@ -87,6 +104,42 @@ struct VotingView: View {
         .frame(maxWidth: .infinity)
         .padding(.top, 60)
         .padding(.bottom, 20)
+    }
+
+    private var timerRing: some View {
+        let fraction = Double(timeRemaining) / Double(max(votingTime, 1))
+        let ringColor: Color = fraction > 0.5 ? .matcha300 : fraction > 0.2 ? .lemon500 : .pomegranate400
+        return ZStack {
+            Circle()
+                .fill(Color.white)
+                .frame(width: 112, height: 112)
+                .shadow(color: .black.opacity(0.22), radius: 8, x: -3, y: 3)
+            Circle()
+                .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [8, 5]))
+                .foregroundStyle(Color.oatBorder)
+                .frame(width: 112, height: 112)
+            Circle()
+                .stroke(Color.oatLight, lineWidth: 5)
+                .frame(width: 82, height: 82)
+            Circle()
+                .trim(from: 0, to: fraction)
+                .stroke(ringColor, style: StrokeStyle(lineWidth: 5, lineCap: .round))
+                .frame(width: 82, height: 82)
+                .rotationEffect(.degrees(-90))
+                .animation(.linear(duration: 1), value: timeRemaining)
+            VStack(spacing: 1) {
+                Text("\(timeRemaining)")
+                    .font(.roobert(30, weight: .semibold))
+                    .foregroundStyle(Color.ink)
+                    .monospacedDigit()
+                    .contentTransition(.numericText(countsDown: true))
+                    .animation(.linear(duration: 0.3), value: timeRemaining)
+                Text("sec")
+                    .font(.roobert(11, weight: .medium))
+                    .tracking(0.5)
+                    .foregroundStyle(Color.warmSilver)
+            }
+        }
     }
 
     // MARK: - Waiting Overlay
@@ -202,29 +255,32 @@ struct StoryVoteCard: View {
     let onAIVote: () -> Void
     let onPretenderVote: () -> Void
 
-    private var tintColor: Color? {
+    private var accentColor: Color {
         if isAIVoted { return .slushie500 }
         if isPretenderVoted { return .ube300 }
-        return nil
+        return .white
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             storyText
             Divider()
-                .background(Color.oatBorder)
+                .background(Color.white.opacity(0.2))
                 .padding(.horizontal, 16)
             voteButtons
         }
         .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(tintColor?.opacity(0.18) ?? Color.white)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .strokeBorder(tintColor ?? Color.oatBorder, lineWidth: tintColor != nil ? 2 : 1)
-                )
+            ZStack {
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color.ube800)
+                    .shadow(color: .black.opacity(0.3), radius: 10, x: -4, y: 4)
+                RoundedRectangle(cornerRadius: 20)
+                    .strokeBorder(Color.black, lineWidth: 2)
+                RoundedRectangle(cornerRadius: 20)
+                    .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [5, 5]))
+                    .foregroundStyle(accentColor)
+            }
         )
-        .shadow(color: .black.opacity(0.12), radius: 0, x: -5, y: 5)
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isAIVoted)
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isPretenderVoted)
     }
@@ -232,7 +288,7 @@ struct StoryVoteCard: View {
     private var storyText: some View {
         Text(story.story)
             .font(.roobert(16))
-            .foregroundStyle(Color.ink)
+            .foregroundStyle(Color.white)
             .lineSpacing(4)
             .padding(20)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -292,7 +348,7 @@ struct StarVoteButton: View {
             Text(currentStars > 0 ? "\(currentStars)" : "Human")
                 .font(.roobert(13, weight: .semibold))
         }
-        .foregroundStyle(currentStars > 0 ? Color.lemon700 : (isActive ? Color.warmCharcoal : Color.oatBorder))
+        .foregroundStyle(currentStars > 0 ? Color.lemon700 : (isActive ? Color.warmCharcoal : Color.warmCharcoal.opacity(0.4)))
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .background(
