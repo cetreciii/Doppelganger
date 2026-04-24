@@ -97,17 +97,22 @@ struct RoleRevealView: View {
     }
 
     private var countdownBar: some View {
-        HStack(spacing: 6) {
-            ForEach(0..<autoAdvanceSeconds, id: \.self) { i in
-                RoundedRectangle(cornerRadius: 3)
-                    .fill(i < (autoAdvanceSeconds - countdown)
-                          ? Color.white.opacity(0.9)
-                          : Color.white.opacity(0.2))
-                    .frame(height: 4)
-                    .animation(.linear(duration: 0.9), value: countdown)
-            }
+        let progress = CGFloat(countdown) / CGFloat(autoAdvanceSeconds)
+        return ZStack {
+            Circle()
+                .stroke(Color.white.opacity(0.15), lineWidth: 3)
+                .frame(width: 36, height: 36)
+            Circle()
+                .trim(from: 0, to: progress)
+                .stroke(Color.white.opacity(0.85), style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                .frame(width: 36, height: 36)
+                .rotationEffect(.degrees(90))
+                .scaleEffect(x: -1)
+                .animation(.linear(duration: 1), value: countdown)
+            Text("\(countdown)")
+                .font(.roobert(13, weight: .semibold))
+                .foregroundStyle(Color.white.opacity(0.85))
         }
-        .frame(maxWidth: 120)
         .opacity(showSubtitle ? 1 : 0)
     }
 

@@ -4,7 +4,7 @@ struct HomeView: View {
     var onCreateLobby: (String) -> Void = { _ in }
     var onJoinLobby: (String) -> Void = { _ in }
 
-    @State private var playerName: String = ""
+    @AppStorage("playerName") private var playerName: String = ""
 
     private var backgroundColor: Color { .canvas }
     private var textColor: Color { .ink }
