@@ -1,12 +1,12 @@
 *** FEATURES ***
 ✅   Multipeer connectivity
 Sound effects for buttons
-Apple's Foundation Models for AI writing story
-Add possibility to name the lobby
-Add points assignation for human stories so they can compete and can avoid cheating writing things such as "i'm the human, i'm not AI"
+✅   Apple's Foundation Models for AI writing story
+✅   Add possibility to name the lobby
+✅   Add points assignation for human stories so they can compete and can avoid cheating writing things such as "i'm the human, i'm not AI"
 Onboarding that let's you insert the name that will then be used as the name of the lobby
-Persistent name
-Change strokes styles to match "doppelganger" stroke style.
+✅   Persistent name
+✅   Change strokes styles to match "doppelganger" stroke style.
 
 *** KNOWN BUGS ***
 
@@ -20,10 +20,10 @@ Ok, now please let's implement the real thing. Please, after the timer of the ga
 *** Multiplayer flow issues ***
 ✅   Three words appear after a while after the game has started
 When tapping away the keyboard, keyboard should disappear
-Shadow under the text of the stories
-Design of cards
+✅   Shadow under the text of the stories
+✅   Design of cards
 AI story is way too long
-When tapping "human" button, the pop-up menu with the stars should appear immediately
+✅   When tapping "human" button, the pop-up menu with the stars should appear immediately
 Owner of the story should not be able to vote it's own story
 ✅   Only one human story appears in the top 3
 ✅   No role decision at the beginning of the game

@@ -9,7 +9,7 @@ internal import Combine
 struct GameSettings: Codable, Equatable {
     var numberOfAI: Int = 1
     var numberOfPretenders: Int = 1
-    var writingTime: Int = 1
+    var writingTime: Int = 60
     var votingTime: Int = 120
 }
 
