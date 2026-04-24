@@ -258,6 +258,11 @@ struct StoryVoteCard: View {
     @State private var hoveredStar: Int = 1
     @State private var pressStartTime: Date? = nil
 
+    private var cardRotation: Double {
+        let hash = story.playerName.unicodeScalars.reduce(0) { $0 + Int($1.value) }
+        return (Double(hash % 100) / 100.0 - 0.5) * 4.0  // -2.0 … +2.0
+    }
+
     private var accentColor: Color {
         if isAIVoted { return .slushie500 }
         if isPretenderVoted { return .ube300 }
@@ -292,6 +297,7 @@ struct StoryVoteCard: View {
                     .transition(.scale(scale: 0.85, anchor: .bottom).combined(with: .opacity))
             }
         }
+        .rotationEffect(.degrees(cardRotation))
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isAIVoted)
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isPretenderVoted)
         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: showingStarPicker)

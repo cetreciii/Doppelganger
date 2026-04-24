@@ -189,6 +189,12 @@ struct ResultsView: View {
                     .foregroundStyle(Color.white)
             }
         )
+        .rotationEffect(.degrees(cardRotation(for: story.playerName)))
+    }
+
+    private func cardRotation(for name: String) -> Double {
+        let hash = name.unicodeScalars.reduce(0) { $0 + Int($1.value) }
+        return (Double(hash % 100) / 100.0 - 0.5) * 4.0
     }
 
     // MARK: - Podium
@@ -283,6 +289,7 @@ struct ResultsView: View {
                     .foregroundStyle(Color.white)
             }
         )
+        .rotationEffect(.degrees(cardRotation(for: result.story.playerName)))
     }
 
     // MARK: - Sequence
