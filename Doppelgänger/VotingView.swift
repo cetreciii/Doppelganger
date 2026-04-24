@@ -218,10 +218,9 @@ struct VotingView: View {
     }
 
     private func checkVotingComplete() {
-        guard let ai = aiVote, let _ = pretenderVote else { return }
-        // Every non-self, non-AI story must be star-rated (pretender story included)
+        guard let ai = aiVote, let pretender = pretenderVote else { return }
         let unvotedStories = stories.filter {
-            $0.playerName != ai && $0.playerName != myName
+            $0.playerName != ai && $0.playerName != pretender && $0.playerName != myName
         }
         let allStarred = unvotedStories.allSatisfy { (starVotes[$0.playerName] ?? 0) > 0 }
         guard allStarred, !votingDone else { return }
@@ -255,6 +254,10 @@ struct StoryVoteCard: View {
     let onAIVote: () -> Void
     let onPretenderVote: () -> Void
 
+    @State private var showingStarPicker = false
+    @State private var hoveredStar: Int = 1
+    @State private var pressStartTime: Date? = nil
+
     private var accentColor: Color {
         if isAIVoted { return .slushie500 }
         if isPretenderVoted { return .ube300 }
@@ -281,8 +284,19 @@ struct StoryVoteCard: View {
                     .foregroundStyle(accentColor)
             }
         )
+        .overlay(alignment: .bottom) {
+            if showingStarPicker {
+                starPicker
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 12)
+                    .transition(.scale(scale: 0.85, anchor: .bottom).combined(with: .opacity))
+            }
+        }
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isAIVoted)
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isPretenderVoted)
+        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: showingStarPicker)
+        .onChange(of: isAIVoted) { _, v in if v { showingStarPicker = false } }
+        .onChange(of: isPretenderVoted) { _, v in if v { showingStarPicker = false } }
     }
 
     private var storyText: some View {
@@ -296,12 +310,69 @@ struct StoryVoteCard: View {
 
     private var voteButtons: some View {
         HStack(spacing: 8) {
-            StarVoteButton(currentStars: starVotes, isActive: !isAIVoted, onVote: onStarVote)
+            // Human star button — long press to open picker, drag to select, release to confirm
+            HStack(spacing: 4) {
+                Image(systemName: starVotes > 0 ? "star.fill" : "star")
+                    .font(.system(size: 13))
+                Text(starVotes > 0 ? "\(starVotes)" : "Human")
+                    .font(.roobert(13, weight: .semibold))
+            }
+            .foregroundStyle(starVotes > 0 ? Color.lemon700 : (!isAIVoted && !isPretenderVoted ? Color.warmCharcoal : Color.warmCharcoal.opacity(0.4)))
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(starVotes > 0 ? Color.lemon400 : Color.oatLight)
+                    .shadow(color: .black, radius: 0, x: -3, y: 3)
+            )
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { value in
+                        guard !isAIVoted && !isPretenderVoted else { return }
+                        if pressStartTime == nil { pressStartTime = Date() }
+                        let elapsed = Date().timeIntervalSince(pressStartTime ?? Date())
+                        if elapsed >= 0.2 && !showingStarPicker {
+                            hoveredStar = max(1, starVotes)
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) { showingStarPicker = true }
+                        }
+                        if showingStarPicker {
+                            hoveredStar = max(1, min(6, 1 + Int(max(0, value.translation.width) / 44)))
+                        }
+                    }
+                    .onEnded { _ in
+                        pressStartTime = nil
+                        if showingStarPicker {
+                            onStarVote(hoveredStar)
+                            withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) { showingStarPicker = false }
+                        }
+                    }
+            )
+
             voteButton("AI", color: .slushie500, textColor: .ink, isSelected: isAIVoted, action: onAIVote)
             voteButton("Pretender", color: .ube300, textColor: .ube800, isSelected: isPretenderVoted, action: onPretenderVote)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 12)
+    }
+
+    private var starPicker: some View {
+        HStack(spacing: 0) {
+            ForEach(1...6, id: \.self) { i in
+                Image(systemName: i <= hoveredStar ? "star.fill" : "star")
+                    .font(.system(size: 26, weight: .bold))
+                    .foregroundStyle(i <= hoveredStar ? Color.lemon500 : Color.oatBorder)
+                    .scaleEffect(i <= hoveredStar ? 1.15 : 1.0)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .animation(.spring(response: 0.15, dampingFraction: 0.6), value: hoveredStar)
+            }
+        }
+        .background(
+            RoundedRectangle(cornerRadius: 14)
+                .fill(Color.white)
+                .shadow(color: .black, radius: 0, x: -4, y: 4)
+                .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(Color.oatBorder, lineWidth: 1))
+        )
     }
 
     private func voteButton(_ label: String, color: Color, textColor: Color, isSelected: Bool, action: @escaping () -> Void) -> some View {
@@ -322,97 +393,6 @@ struct StoryVoteCard: View {
     }
 }
 
-// MARK: - Star Vote Button
-
-struct StarVoteButton: View {
-    let currentStars: Int
-    let isActive: Bool
-    let onVote: (Int) -> Void
-
-    @State private var showingStars = false
-    @State private var selectedStars: Int = 1
-    @State private var pressStartTime: Date? = nil
-    @State private var starScale: [CGFloat] = Array(repeating: 0, count: 6)
-
-    var body: some View {
-        ZStack(alignment: .bottom) {
-            buttonFace
-            if showingStars { starPicker }
-        }
-    }
-
-    private var buttonFace: some View {
-        HStack(spacing: 4) {
-            Image(systemName: currentStars > 0 ? "star.fill" : "star")
-                .font(.system(size: 13))
-            Text(currentStars > 0 ? "\(currentStars)" : "Human")
-                .font(.roobert(13, weight: .semibold))
-        }
-        .foregroundStyle(currentStars > 0 ? Color.lemon700 : (isActive ? Color.warmCharcoal : Color.warmCharcoal.opacity(0.4)))
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .fill(currentStars > 0 ? Color.lemon400 : Color.oatLight)
-                .shadow(color: .black, radius: 0, x: -3, y: 3)
-        )
-        .gesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { val in
-                    guard isActive else { return }
-                    if pressStartTime == nil { pressStartTime = Date() }
-                    let elapsed = Date().timeIntervalSince(pressStartTime ?? Date())
-                    if elapsed >= 0.35 && !showingStars {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) { showingStars = true }
-                        for i in 0..<6 {
-                            withAnimation(.spring(response: 0.3, dampingFraction: 0.55).delay(Double(i) * 0.05)) {
-                                starScale[i] = 1
-                            }
-                        }
-                    }
-                    if showingStars {
-                        let x = val.translation.width
-                        selectedStars = max(1, min(6, 1 + Int(x / 36)))
-                    }
-                }
-                .onEnded { _ in
-                    if showingStars {
-                        onVote(selectedStars)
-                        withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) { showingStars = false }
-                        starScale = Array(repeating: 0, count: 6)
-                    }
-                    pressStartTime = nil
-                }
-        )
-        .allowsHitTesting(isActive)
-    }
-
-    private var starPicker: some View {
-        HStack(spacing: 6) {
-            ForEach(0..<6, id: \.self) { i in
-                Image(systemName: i < selectedStars ? "star.fill" : "star")
-                    .font(.system(size: 22, weight: .bold))
-                    .foregroundStyle(i < selectedStars ? Color.lemon500 : Color.oatBorder)
-                    .scaleEffect(starScale[i])
-                    .scaleEffect(i < selectedStars ? 1.15 : 1.0)
-                    .animation(.spring(response: 0.2, dampingFraction: 0.5), value: selectedStars)
-            }
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color.white)
-                .shadow(color: .black, radius: 0, x: -4, y: 4)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .strokeBorder(Color.oatBorder, lineWidth: 1)
-                )
-        )
-        .offset(y: -54)
-        .transition(.scale(scale: 0.7, anchor: .bottom).combined(with: .opacity))
-    }
-}
 
 #Preview {
     VotingView(manager: MultipeerManager(), onReveal: {})
