@@ -2,7 +2,7 @@ import SwiftUI
 import MultipeerConnectivity
 
 enum AppScreen {
-    case home, createLobby, joinLobby, game
+    case home, createLobby, joinLobby, roleReveal, game
 }
 
 struct ContentView: View {
@@ -45,6 +45,10 @@ struct ContentView: View {
                     manager.reset()
                     screen = .home
                 }
+            case .roleReveal:
+                RoleRevealView(manager: manager) {
+                    screen = .game
+                }
             case .game:
                 GameView(manager: manager) {
                     manager.reset()
@@ -53,9 +57,7 @@ struct ContentView: View {
             }
         }
         .onChange(of: manager.gameStarted) { _, started in
-            if started {
-                screen = .game
-            }
+            if started { screen = .roleReveal }
         }
     }
 }
