@@ -30,6 +30,7 @@ struct ResultsView: View {
     @State private var verdictVisible = false
     @State private var podiumStories: [StoryResult] = []
     @State private var podiumRevealed: Int = 0
+    @State private var cardRotations: [String: Double] = [:]
     
     private var results: [StoryResult] {
         manager.allStories.map { story -> StoryResult in
@@ -189,12 +190,14 @@ struct ResultsView: View {
                     .foregroundStyle(Color.white)
             }
         )
-        .rotationEffect(.degrees(cardRotation(for: story.playerName)))
+        .rotationEffect(.degrees(rotation(for: story.playerName)))
     }
 
-    private func cardRotation(for name: String) -> Double {
-        let hash = name.unicodeScalars.reduce(0) { $0 + Int($1.value) }
-        return (Double(hash % 100) / 100.0 - 0.5) * 4.0
+    private func rotation(for name: String) -> Double {
+        if let r = cardRotations[name] { return r }
+        let r = Double.random(in: -5.0...5.0)
+        DispatchQueue.main.async { cardRotations[name] = r }
+        return r
     }
 
     // MARK: - Podium
@@ -223,8 +226,8 @@ struct ResultsView: View {
                             ))
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 40)
+                .padding(.horizontal, 32)
+                .padding(.vertical, 24)
             }
 
             if podiumRevealed == podiumStories.count {
@@ -289,7 +292,7 @@ struct ResultsView: View {
                     .foregroundStyle(Color.white)
             }
         )
-        .rotationEffect(.degrees(cardRotation(for: result.story.playerName)))
+        .rotationEffect(.degrees(rotation(for: result.story.playerName)))
     }
 
     // MARK: - Sequence

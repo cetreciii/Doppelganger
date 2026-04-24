@@ -83,9 +83,9 @@ struct VotingView: View {
                         )
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 16)
-                .padding(.bottom, 40)
+                .padding(.horizontal, 32)
+                .padding(.top, 24)
+                .padding(.bottom, 48)
             }
         }
     }
@@ -258,10 +258,7 @@ struct StoryVoteCard: View {
     @State private var hoveredStar: Int = 1
     @State private var pressStartTime: Date? = nil
 
-    private var cardRotation: Double {
-        let hash = story.playerName.unicodeScalars.reduce(0) { $0 + Int($1.value) }
-        return (Double(hash % 100) / 100.0 - 0.5) * 4.0  // -2.0 … +2.0
-    }
+    @State private var cardRotation: Double = Double.random(in: -3.5...3.5)
 
     private var accentColor: Color {
         if isAIVoted { return .slushie500 }
