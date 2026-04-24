@@ -347,7 +347,10 @@ extension MultipeerManager: MCSessionDelegate {
                 self.allStories = stories
                 self.votingPhase = true
             case .voteSubmitted(let vote):
-                if !self.votes.contains(vote) { self.votes.append(vote) }
+                if !self.votes.contains(vote) {
+                    self.votes.append(vote)
+                    if self.isHost { self.send(.voteSubmitted(vote), to: self.connectedPeers) }
+                }
             case .voterDone(let name):
                 self.completedVoters.insert(name)
                 if self.isHost { self.checkAllVoted() }

@@ -18,13 +18,14 @@ Fine-tuning during first two rounds on writing style of players to give a consis
 Ok, now please let's implement the real thing. Please, after the timer of the game runs out, go to voting screen where there is a scroll list with all the cards with the stories. tapping on a story opens the flashcard of the story with an animation that scales it. Under the scaled flashcard three buttons appear: one to vote AI, one to vote Pretender and one to vote human.
 
 *** Multiplayer flow issues ***
-Three words appear after a while after the game has started
+✅   Three words appear after a while after the game has started
 When tapping away the keyboard, keyboard should disappear
-Shadow under the text
+Shadow under the text of the stories
 Design of cards
 AI story is way too long
 When tapping "human" button, the pop-up menu with the stars should appear immediately
 Owner of the story should not be able to vote it's own story
-Only one human story appears in the top 3
-No role decision at the beginning of the game
+✅   Only one human story appears in the top 3
+✅   No role decision at the beginning of the game
 "Revealing in" disappears with the countdown
+✅   When the client votes AI and pretender, it marks the player as "every vote has been submitted" even if it has not voted for humans.

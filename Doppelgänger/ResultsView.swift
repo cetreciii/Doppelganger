@@ -49,7 +49,7 @@ struct ResultsView: View {
     }
 
     private var humanResults: [StoryResult] {
-        results.filter { $0.story.role == .human }
+        results.filter { $0.story.role != .ai }
             .sorted { $0.totalStars > $1.totalStars }
     }
 
@@ -205,11 +205,11 @@ struct ResultsView: View {
 
             ScrollView {
                 VStack(spacing: 16) {
-                    ForEach(Array(podiumStories.prefix(podiumRevealed).enumerated()), id: \.offset) { idx, result in
-                        let place = podiumStories.count - idx
+                    ForEach(Array(podiumStories.prefix(podiumRevealed).reversed().enumerated()), id: \.element.story.id) { idx, result in
+                        let place = podiumStories.count - podiumRevealed + 1 + idx
                         podiumCard(result: result, place: place)
                             .transition(.asymmetric(
-                                insertion: .scale(scale: 0.8, anchor: .bottom).combined(with: .opacity),
+                                insertion: .scale(scale: 0.8, anchor: .top).combined(with: .opacity),
                                 removal: .opacity
                             ))
                     }

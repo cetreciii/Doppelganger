@@ -8,6 +8,7 @@ struct RoleRevealView: View {
     @State private var showCard = false
     @State private var showSubtitle = false
     @State private var countdown = 4
+    @State private var isExiting = false
 
     private let revealDelay: Double = 1.6
     private let autoAdvanceSeconds = 4
@@ -28,6 +29,7 @@ struct RoleRevealView: View {
                     .padding(.bottom, 52)
             }
         }
+        .opacity(isExiting ? 0 : 1)
         .onAppear {
             if manager.isHost {
                 manager.broadcastRoles()
@@ -103,10 +105,10 @@ struct RoleRevealView: View {
                 .stroke(Color.white.opacity(0.15), lineWidth: 3)
                 .frame(width: 36, height: 36)
             Circle()
-                .trim(from: 0, to: progress)
+                .trim(from: 1 - progress, to: 1)
                 .stroke(Color.white.opacity(0.85), style: StrokeStyle(lineWidth: 3, lineCap: .round))
                 .frame(width: 36, height: 36)
-                .rotationEffect(.degrees(90))
+                .rotationEffect(.degrees(-90))
                 .scaleEffect(x: -1)
                 .animation(.linear(duration: 1), value: countdown)
             Text("\(countdown)")
@@ -135,14 +137,18 @@ struct RoleRevealView: View {
         countdown = remaining
 
         func tick() {
-            guard remaining > 0 else {
-                onContinue()
-                return
-            }
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 remaining -= 1
-                countdown = remaining
-                tick()
+                if remaining == 0 {
+                    countdown = 0
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        withAnimation(.easeIn(duration: 0.4)) { isExiting = true }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { onContinue() }
+                    }
+                } else {
+                    countdown = remaining
+                    tick()
+                }
             }
         }
         tick()

@@ -140,7 +140,7 @@ struct VotingView: View {
     // MARK: - Vote Logic
 
     private func handleStarVote(story: PlayerStory, stars: Int) {
-        guard aiVote != story.playerName, pretenderVote != story.playerName else { return }
+        guard aiVote != story.playerName else { return }
         starVotes[story.playerName] = stars
         checkVotingComplete()
     }
@@ -161,14 +161,14 @@ struct VotingView: View {
         } else {
             pretenderVote = story.playerName
         }
-        starVotes.removeValue(forKey: story.playerName)
         checkVotingComplete()
     }
 
     private func checkVotingComplete() {
-        guard let _ = aiVote, let _ = pretenderVote else { return }
+        guard let ai = aiVote, let _ = pretenderVote else { return }
+        // Every non-self, non-AI story must be star-rated (pretender story included)
         let unvotedStories = stories.filter {
-            $0.playerName != aiVote && $0.playerName != pretenderVote && $0.playerName != myName
+            $0.playerName != ai && $0.playerName != myName
         }
         let allStarred = unvotedStories.allSatisfy { (starVotes[$0.playerName] ?? 0) > 0 }
         guard allStarred, !votingDone else { return }
@@ -240,7 +240,7 @@ struct StoryVoteCard: View {
 
     private var voteButtons: some View {
         HStack(spacing: 8) {
-            StarVoteButton(currentStars: starVotes, isActive: !isAIVoted && !isPretenderVoted, onVote: onStarVote)
+            StarVoteButton(currentStars: starVotes, isActive: !isAIVoted, onVote: onStarVote)
             voteButton("AI", color: .slushie500, textColor: .ink, isSelected: isAIVoted, action: onAIVote)
             voteButton("Pretender", color: .ube300, textColor: .ube800, isSelected: isPretenderVoted, action: onPretenderVote)
         }
